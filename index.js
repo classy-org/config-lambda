@@ -1,5 +1,6 @@
 'use strict';
 const async = require('async');
+const _ = require('lodash');
 let configuration;
 let factories;
 
@@ -17,8 +18,9 @@ module.exports = function(config) {
       }, next);
     },
     get: key => {
-      if (configuration[key]) {
-        return configuration[key];
+      let value = _.get(configuration, key, null);
+      if (value) {
+        return value;
       }
       for (let factory of factories) {
         let value = factory.get(key);
