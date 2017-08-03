@@ -7,14 +7,14 @@ Simple file based configuration for multi stage lambda deployments with support 
 
 # options
 
-* file: (STRING) the configuration file in JSON format
-* stage: (STRING) the stage of deployment, referring to which section of the JSON file should be used for configuration
+* environments: (OBJECT) the environments object
+* stage: (STRING) the stage of deployment, referring to which section of the environments object should be used for configuration
 
 # usage
 
 Config.get(key)
 
-environment.json
+environments.json
 ```json
 {
   "dev": {
@@ -25,7 +25,7 @@ environment.json
 
 ```javascript
 const Config = require('config-lambda')({
-  file: 'environment.json',
+  environments: require('./environments.json'),
   stage: 'dev'
 });
 
@@ -43,6 +43,7 @@ module.exports.handle = (event, context, callback) => {
 
 Config.load([factory]) / Config.get(key)
 
+environments.json
 ```json
 {
   "dev": {
@@ -53,10 +54,10 @@ Config.load([factory]) / Config.get(key)
 
 ```javascript
 const Config = require('config-lambda')({
-  file: 'environment.json',
+  environments: require('./environments.json'),
   stage: 'dev'
 });
-const CredstashLambda = require('credstash-lambda')({
+const Credstash = require('credstash-lambda')({
   table: 'SECRET_TABLE',
   region: 'AWS_REGION',
   keys: ['SAMPLE_SECRET_KEY']
@@ -68,7 +69,7 @@ function doSomething(..., sampleValue, sampleSecret, callback) {
 }
 
 module.exports.handle = (event, context, callback) => {
-  Config.load([CredstashLambda], function(error) {
+  Config.load([Credstash], function(error) {
     if (error) {
       callback(error);
     } else {

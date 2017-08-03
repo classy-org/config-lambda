@@ -1,14 +1,14 @@
 const keys = JSON.parse(process.argv[4]);
 const Config = require('../index.js')({
-  file: './test/environment.json',
+  environments: require('./environment.json'),
   stage: 'dev'
 });
-const CredstashLambda = require('credstash-lambda')({
+const Credstash = require('credstash-lambda')({
   table: process.argv[2],
   region: process.argv[3],
   keys
 });
-Config.load([CredstashLambda], function(error) {
+Config.load([Credstash], function(error) {
   if (error) {
     console.error(error);
   } else {

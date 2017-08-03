@@ -5,11 +5,11 @@ let configuration;
 let factories;
 
 module.exports = function(config) {
-  if (!config || !config.file || !config.stage) {
-    console.log(!config, !config.file, !config.stage);
-    throw new Error(`You must provide a configuration file and stage.`);
+  if (!config || !config.environments || !config.stage) {
+    console.log(!config, !config.environments, !config.stage);
+    throw new Error(`You must provide an environments object and stage.`);
   }
-  configuration = require(config.file)[config.stage];
+  configuration = config.environments[config.stage];
   return {
     load: (factoryList, next) => {
       factories = factoryList;
