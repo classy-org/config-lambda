@@ -1,26 +1,32 @@
-# credstash-lambda
-Provide reliable method to read Credstash secrets on-demand within Lambda functions. Problem: How do we load values from Credstash (AWS KMS and DynamoDB) smartly and reliably given Lambda's lifecycle?  This module provides a simple way to "load" secrets once as part of a Lambda's handler and provide a simple local copy of secrets during the life of the Lambda process.
+# config-lambda
+Simple file based configuration for multi stage lambda deployments with support for other configuration factories like credstash-lambda.
 
 # installation
 
- $ npm install --save credstash-lambda
+ $ npm install --save config-lambda
 
 # options
 
-* table: (STRING) the name of the DynamoDB table which stores encrypted secrets
-* region: (STRING) the AWS region i.e. us-west-2
-* keys: (Array[STRING]) the keys for the values you are retrieving from Credstash
-* \[defaults\]: (Array[STRING]) optional array of values to use in lieu of Credstash values, used for local test
+* file: (STRING) the configuration file in JSON format
+* stage: (STRING) the stage of deployment, referring to which section of the JSON file should be used for configuration
 
 # usage
 
-CredstashLambda.load() / CredstashLambda.get(key)
+Config.get(key)
+
+environment.json
+```json
+{
+  "dev": {
+    "SAMPLE_KEY": "SAMPLE_VALUE"
+  }
+}
+```
 
 ```javascript
-const CredstashLambda = require('credstash-lambda')({
-  table: 'TABLE_NAME',
-  region: 'AWS_REGION',
-  keys: ['SAMPLE_KEY']
+const Config = require('config-lambda')({
+  file: 'environment.json',
+  stage: 'dev'
 });
 
 function doSomething(..., sampleValue, callback) {
@@ -29,14 +35,48 @@ function doSomething(..., sampleValue, callback) {
 }
 
 module.exports.handle = (event, context, callback) => {
-  CredstashLambda.load(function(error) {
+  let sampleValue = Config.get('SAMPLE_KEY');
+  console.log(`SAMPLE_KEY: ${sampleValue}`);
+  doSomething(..., sampleValue, callback);
+}
+```
+
+Config.load([factory]) / Config.get(key)
+
+```json
+{
+  "dev": {
+    "SAMPLE_KEY": "SAMPLE_VALUE"
+  }
+}
+```
+
+```javascript
+const Config = require('config-lambda')({
+  file: 'environment.json',
+  stage: 'dev'
+});
+const CredstashLambda = require('credstash-lambda')({
+  table: 'SECRET_TABLE',
+  region: 'AWS_REGION',
+  keys: ['SAMPLE_SECRET_KEY']
+});
+
+function doSomething(..., sampleValue, sampleSecret, callback) {
+   ...
+   callback();
+}
+
+module.exports.handle = (event, context, callback) => {
+  Config.load([CredstashLambda], function(error) {
     if (error) {
       callback(error);
     } else {
-      let sampleValue = CredstashLambda.get('SAMPLE_KEY');
-      console.log(`SAMPLE_KEY: ${sampleValue}`);
-      doSomething(..., sampleValue, callback);
+      let sampleValue = Config.get('SAMPLE_KEY'),
+        sampleSecret = Config.get('SAMPLE_SECRET_KEY');
+      console.log(`SAMPLE_KEY: ${sampleValue} SAMPLE_SECRET: ${sampleSecret}`);
+      doSomething(..., sampleValue, sampleSecret, callback);
     }
-  });
+  })
 }
 ```
