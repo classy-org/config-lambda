@@ -1,6 +1,6 @@
 {
   "name": "config-lambda",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Simple file based configuration for Lambda.",
   "main": "index.js",
   "scripts": {
@@ -21,8 +21,8 @@
   },
   "homepage": "https://github.com/jnngrm/config-lambda#readme",
   "dependencies": {
-    "async": "^2.5.0",
-    "lodash": "^4.17.4"
+    "async": "^2.6.0",
+    "lodash": "^4.17.5"
   },
   "devDependencies": {
     "credstash-lambda": "^1.0.10",
