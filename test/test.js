@@ -1,5 +1,5 @@
 const keys = JSON.parse(process.argv[4]);
-const Config = require('../index.js')({
+const Config = require('../lib/index.js')({
   environments: require('./environment.json'),
   stage: 'dev'
 });
@@ -15,4 +15,10 @@ Config.load([Credstash], function(error) {
     console.log(Config.get('SAMPLE_KEY'));
     console.log(Config.get(keys[0]));
   }
+});
+Config.loadAsync([Credstash]).then(() => {
+  console.log(Config.get('SAMPLE_KEY'));
+  console.log(Config.get(keys[0]));
+}).catch(error => {
+  console.error(error);
 });
