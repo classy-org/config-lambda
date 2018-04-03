@@ -1,6 +1,6 @@
 {
   "name": "config-lambda",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "Simple file based configuration for Lambda.",
   "main": "lib/index.js",
   "scripts": {
