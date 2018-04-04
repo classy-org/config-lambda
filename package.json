@@ -34,5 +34,8 @@
     "credstash-lambda": "^1.0.14",
     "eslint": "^4.17.0",
     "eslint-config-google": "^0.9.1"
-  }
+  },
+  "files": [
+    "lib"
+  ]
 }
